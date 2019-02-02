@@ -15,25 +15,43 @@
   </xsl:template>
 
   <xsl:template match="wms:Capability">
-    <xsl:copy copy-namespaces="no"/>
-    <xsl:apply-templates/>
+    <xsl:copy copy-namespaces="no">
+      <xsl:copy-of copy-namespaces="no" select="wms:Request"/>
+      <xsl:copy-of copy-namespaces="no" select="wms:Exception"/>
+      <xsl:copy-of copy-namespaces="no" select="sld:UserDefinedSymbolization"/>
+
+      <xsl:copy copy-namespaces="no" select="wms:Layer">
+        <xsl:copy-of select="@*"/>
+        <xsl:copy-of copy-namespaces="no" select="wms:Name"/>
+        <xsl:copy-of copy-namespaces="no" select="wms:Title"/>
+        <xsl:copy-of copy-namespaces="no" select="wms:CRS"/>
+        <xsl:copy-of copy-namespaces="no" select="wms:EX_GeographicBoundingBox"/>
+        <xsl:copy-of copy-namespaces="no" select="wms:BoundingBox"/>
+        <xsl:for-each-group select="/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer" group-by="substring(wms:Name, 1, 9)">
+          <Layer queryable="1">
+            <Name><xsl:value-of select="substring(wms:Name, 1, 9)"/></Name>
+            <Title><xsl:value-of select="upper-case(substring(wms:Name, 7, 3))"/></Title>
+
+            <xsl:for-each select="current-group()">
+              <xsl:copy-of copy-namespaces="no" select="."/>
+              <!--<xsl:copy-of copy-namespaces="no" select="wms:Layer"/>-->
+              <!--
+              <xsl:text>   
+              </xsl:text>
+              <xsl:value-of select="wms:Name"/> <xsl:value-of select="count(ancestor::*)"/><xsl:text>   
+              </xsl:text>
+  -->
+
+            </xsl:for-each>
+          </Layer>
+        </xsl:for-each-group>
+
+      </xsl:copy>
+
+
+    </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="wms:Request">
-    <xsl:copy-of copy-namespaces="no" select="."/>  
-  </xsl:template>
 
-  <xsl:template match="wms:Exception">
-    <xsl:copy-of copy-namespaces="no" select="."/>  
-  </xsl:template>
-
-  <xsl:template match="sld:UserDefinedSymbolization">
-    <xsl:copy-of copy-namespaces="no" select="."/>  
-  </xsl:template>
-
-  <xsl:template match="wms:Layer">
-    <xsl:copy copy-namespaces="no"/>
-    <xsl:apply-templates/>
-  </xsl:template>
 
 </xsl:stylesheet>
